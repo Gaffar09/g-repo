@@ -20,6 +20,7 @@ module.exports = defineConfig({
     "html"; false,
     "json"; true,
     "reportDir"; "cypress/report/mochawesome-report"
+    "supportFile"; false
    }
   }
  
