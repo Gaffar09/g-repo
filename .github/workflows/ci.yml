@@ -33,6 +33,21 @@ jobs:
         echo "Node.js version is ${{ steps.node-version.outputs.nodeVersion }}"
         echo "npm version is ${{ steps.npm-version.outputs.npmVersion }}"
 
+    - name: List files for debbuging
+      run: ls -la
+
+    - name: Check Cypress installation
+      run: npm list cypress
+
+    - name: List Node modules bin directory
+      run: ls -la node_modules/.bin
+
+    - name: Print PATH environment variable
+      run: echo $PATH
+
+    - name: Ensure cypress is executable
+      run: chmod +x node_modules/.bin/cypress
+
     - name: Run Cypress tests
       uses: cypress-io/github-action@v5
       with:
