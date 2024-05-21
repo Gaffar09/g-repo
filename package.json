@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
     "test": "cypress run --spec C:/Users/GAFAR/Documents/GIT/g-repo/cypress/e2e/onafriq.cy.js",
-    "pretest": "echo Na Im be this",
-    "posttest": "echo No be am be this",
-    "build": "echo No be am be this"
+    "cypress:open": "cypress open"
   },
   "keywords": [],
   "author": "",
