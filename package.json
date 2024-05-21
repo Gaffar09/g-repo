@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cypress run --spec onafriq.cy.js",
+    "test": "cypress run --spec cypress/e2e/onafriq.cy.js",
     "pretest": "echo Na Im be this",
     "posttest": "echo No be am be this",
     "build": "echo No be am be this"
