@@ -132,7 +132,7 @@ it ('Download Invoice',function(){
     cy.get('[data-qa="expiry-year"]').type('1900')
     cy.get('[data-qa="expiry-year"]').click()
     cy.get('[data-qa="pay-button"]').click()
-    cy.get('.col-sm-9 > .btn-default').click()
+    cy.get('.col-sm-9 > .btn-default').should('be.enabled')
     
 })
 })

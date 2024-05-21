@@ -1,7 +1,7 @@
 {
-  "name": "g-repo",
+  "name": "first-test",
   "version": "1.0.0",
-  "description": "On Afriq Test",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "cypress run --spec cypress/e2e/onafriq.cy.js",
@@ -10,9 +10,8 @@
     "build": "echo No be am be this"
   },
   "keywords": [],
-  "author": "Gaffar Sanni",
+  "author": "",
   "license": "ISC",
-  "homepage": "https://github.com/Gaffar09/g-repo",
   "dependencies": {
     "cypress": "^13.3.1",
     "cypress-downloadfile": "^1.2.3",
