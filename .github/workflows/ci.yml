@@ -1,0 +1,42 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Get Node.js version
+      id: node-version
+      run: echo "::set-output name=nodeVersion::$(node -v)"
+      shell: bash
+
+    - name: Get npm version
+      id: npm-version
+      run: echo "::set-output name=npmVersion::$(npm -v)"
+      shell: bash
+
+    - name: Output versions
+      run: |
+        echo "Node.js version is ${{ steps.node-version.outputs.nodeVersion }}"
+        echo "npm version is ${{ steps.npm-version.outputs.npmVersion }}"
+
+    - name: Run Cypress tests
+      uses: cypress-io/github-action@v5
+      with:
+        start: npm start
+        wait-on: http://localhost:3000
+        wait-on-timeout: 120
+        command: npm run test
