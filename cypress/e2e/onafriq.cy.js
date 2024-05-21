@@ -4,8 +4,13 @@ it ('Login Test',function(){
     cy.get('[data-qa="login-email"]').type('qat@mailinator.com')
     cy.get('[data-qa="login-password"]').type('123456')
     cy.get('[data-qa="login-button"]').click()
-
-
+})
+it ('Login Test',function(){
+    cy.visit('https://www.automationexercise.com/')
+    cy.get('.shop-menu > .nav > :nth-child(4) > a').click()
+    cy.get('[data-qa="login-email"]').type('qat@mailinator.com')
+    cy.get('[data-qa="login-password"]').type('123456')
+    cy.get('[data-qa="login-button"]').click()
     cy.get(':nth-child(1) > .panel-heading > .panel-title > a > .badge > .fa').click()
     cy.get('#Women > .panel-body > ul > :nth-child(1) > a').click()
     cy.get(':nth-child(1) > .panel-heading > .panel-title > a > .badge > .fa').click()
