@@ -29,6 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install google-genai
+             pip install pandas
 
       - name: Generate test cases using AI
         env:
