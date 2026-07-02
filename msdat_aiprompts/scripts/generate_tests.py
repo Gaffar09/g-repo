@@ -6,8 +6,10 @@ from openai import OpenAI
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 BASE_DIR = Path(__file__).resolve().parents[1]
+prompt_template = (
+    BASE_DIR / "prompts/msdat_api_prompts.md"
+).read_text(encoding="utf-8")
 
-prompt_template = (BASE_DIR / "prompts/api-test-generation.md").read_text()
 endpoints = json.loads((BASE_DIR / "inputs/api-endpoints.json").read_text())
 
 output_dir = BASE_DIR / "outputs/generated-tests"
