@@ -27,18 +27,29 @@ Coverage Required:
 15. Security abuse cases
 
 STRICT OUTPUT RULES:
-- Return ONLY one markdown table.
+- Return ONLY valid JSON.
+- Do not include markdown.
+- Do not include ```json code fences.
 - Do not include any introduction.
 - Do not include endpoint summary text.
-- Do not include notes before or after the table.
-- Do not include bullet points.
-- Do not include headings.
+- Do not include notes before or after the JSON.
 - Generate at least 5 test cases.
-- Each row must be concise but detailed enough for automation.
 - Use Test IDs starting from APIMSDAT-001.
+- Priority must be one of: High, Medium, Low.
 - Automation Tool must be one of: Postman, Newman, k6.
 
-Required table columns:
-| Test ID | Scenario | Precondition | Test Steps | Test Data | Expected Result | Priority | Automation Tool |
+Required JSON format:
+[
+  {
+    "test_id": "APIMSDAT-001",
+    "scenario": "",
+    "precondition": "",
+    "test_steps": "",
+    "test_data": "",
+    "expected_result": "",
+    "priority": "High",
+    "automation_tool": "Postman"
+  }
+]
 
 Now generate the API test cases.
