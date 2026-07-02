@@ -23,11 +23,11 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install openai
+        run: pip install google-genai
 
       - name: Generate test cases using AI
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python msdat_aiprompts/scripts/generate_tests.py
 
       - name: Upload generated test cases
