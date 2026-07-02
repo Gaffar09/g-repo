@@ -3,9 +3,10 @@ name: Generate AI Test Cases
 on:
   push:
     paths:
-      - "prompts/**"
-      - "inputs/**"
-      - "scripts/**"
+      - "msdat_aiprompts/prompts/**"
+      - "msdat_aiprompts/inputs/**"
+      - "msdat_aiprompts/scripts/**"
+      - "msdat_aiprompts/config/**"
   workflow_dispatch:
 
 jobs:
