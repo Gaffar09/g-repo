@@ -1,7 +1,6 @@
 {
-  "provider": "openrouter",
-  "base_url": "https://openrouter.ai/api/v1",
-  "model": "deepseek/deepseek-chat-v3",
+  "provider": "gemini",
+  "model": "gemini-2.5-flash",
   "temperature": 0.2,
   "output_format": "markdown"
 }
