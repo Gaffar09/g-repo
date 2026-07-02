@@ -1,7 +1,8 @@
 import os
 import json
 from pathlib import Path
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -34,24 +35,18 @@ def build_prompt(prompt_template, item):
     return final_prompt
 
 
-def generate_with_openrouter(config, prompt):
-    client = OpenAI(
-        api_key=os.environ["OPENROUTER_API_KEY"],
-        base_url=config["base_url"]
-    )
+def generate_with_gemini(config, prompt):
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-    response = client.chat.completions.create(
+    response = client.models.generate_content(
         model=config["model"],
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=config.get("temperature", 0.2)
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=config.get("temperature", 0.2)
+        )
     )
 
-    return response.choices[0].message.content
+    return response.text
 
 
 def save_output(item, generated_tests):
@@ -61,7 +56,6 @@ def save_output(item, generated_tests):
     output_file = OUTPUT_DIR / file_name
 
     output_file.write_text(generated_tests, encoding="utf-8")
-
     print(f"Generated: {output_file}")
 
 
@@ -72,7 +66,7 @@ def main():
 
     for item in endpoints:
         final_prompt = build_prompt(prompt_template, item)
-        generated_tests = generate_with_openrouter(config, final_prompt)
+        generated_tests = generate_with_gemini(config, final_prompt)
         save_output(item, generated_tests)
 
     print("AI test cases generated successfully.")
