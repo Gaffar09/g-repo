@@ -1,6 +1,6 @@
 You are a senior QA automation engineer.
 
-Generate security-focused API test cases for the MSDAT authentication endpoint below.
+Generate security-focused API test cases for the MSDAT endpoint below.
 
 Endpoint: {{endpoint}}
 Method: {{method}}
@@ -9,25 +9,36 @@ Authentication Type: {{auth_type}}
 Description: {{description}}
 Request Body: {{request_body}}
 
-Important Context:
-- This endpoint is used to generate the X-Frontend-JWT token.
-- No existing token is required to call this endpoint.
-- The request body is an empty JSON object: {}.
+Coverage Required:
+1. Successful request
+2. Empty body
+3. Missing body
+4. Malformed JSON
+5. Invalid HTTP method
+6. Invalid content type
+7. Unexpected extra fields
+8. Token format validation, if token is returned
+9. Token expiry validation, if applicable
+10. Unauthorized access
+11. Invalid token
+12. Missing token
+13. Repeated request handling
+14. Error response validation
+15. Security abuse cases
 
-Generate test cases covering:
-1. Successful token generation
-2. Empty JSON body {}
-3. Missing request body
-4. Invalid HTTP method
-5. Invalid content type
-6. Malformed JSON body
-7. Extra unexpected fields
-8. Repeated token generation
-9. Token format validation
-10. Token expiry validation
-11. Token usage on protected endpoints
-12. Missing token on protected endpoints
-13. Invalid token on protected endpoints
+STRICT OUTPUT RULES:
+- Return ONLY one markdown table.
+- Do not include any introduction.
+- Do not include endpoint summary text.
+- Do not include notes before or after the table.
+- Do not include bullet points.
+- Do not include headings.
+- Generate at least 5 test cases.
+- Each row must be concise but detailed enough for automation.
+- Use Test IDs starting from APIMSDAT-001.
+- Automation Tool must be one of: Postman, Newman, k6.
 
-Return the result as a markdown table with:
-Test ID, Scenario, Precondition, Test Steps, Test Data, Expected Result, Priority, Automation Tool.
+Required table columns:
+| Test ID | Scenario | Precondition | Test Steps | Test Data | Expected Result | Priority | Automation Tool |
+
+Now generate the API test cases.
