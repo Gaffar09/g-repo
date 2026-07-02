@@ -1,5 +1,8 @@
 name: Generate AI Test Cases
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
@@ -16,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,8 +32,13 @@ jobs:
 
       - name: Generate test cases using AI
         env:
-            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python msdat_aiprompts/scripts/generate_tests.py
+
+      - name: Show generated files
+        run: |
+          pwd
+          find msdat_aiprompts/outputs -type f
 
       - name: Upload generated test cases
         uses: actions/upload-artifact@v4
@@ -38,8 +48,8 @@ jobs:
 
       - name: Commit generated test cases
         run: |
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git add msdat_aiprompts/outputs/generated-tests/
-            git commit -m "Add generated AI test cases" || echo "No changes to commit"
-            git push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add msdat_aiprompts/outputs/generated-tests/
+          git commit -m "Add generated AI test cases" || echo "No changes to commit"
+          git push
