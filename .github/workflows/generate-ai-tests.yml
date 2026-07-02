@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-ai-test-cases
-          path: outputs/generated-tests/
+          path: msdat_aiprompts/outputs/generated-tests/
