@@ -27,7 +27,7 @@ jobs:
       - name: Generate test cases using AI
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python scripts/generate_tests.py
+        run: python msdat_aiprompts/scripts/generate_tests.py
 
       - name: Upload generated test cases
         uses: actions/upload-artifact@v4
