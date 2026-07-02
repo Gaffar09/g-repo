@@ -1,0 +1,13 @@
+Prompt Name: API Functional Test Case Generator
+
+Purpose:
+Generate reusable functional API test cases for MSDAT endpoints.
+
+Input Required:
+- Endpoint URL
+- HTTP method
+- Request headers
+- Request body
+- Authentication requirement
+- Expected response schema
+
