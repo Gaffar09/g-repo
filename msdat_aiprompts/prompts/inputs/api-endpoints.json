@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Generate Frontend Token",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token",
+    "method": "POST",
+    "auth_required": false,
+    "auth_type": "X-Frontend-JWT",
+    "description": "This endpoint generates the frontend JWT token used for accessing MSDAT protected endpoints.",
+    "request_body": {}
+  }
+]
