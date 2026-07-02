@@ -1,3 +1,4 @@
+import pandas as pd
 import os
 import json
 from pathlib import Path
@@ -50,14 +51,28 @@ def generate_with_gemini(config, prompt):
 
 
 def save_output(item, generated_tests):
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    file_name = item["name"].lower().replace(" ", "_") + "_tests.md"
-    output_file = OUTPUT_DIR / file_name
+    base_name = item["name"].lower().replace(" ", "_")
 
-    output_file.write_text(generated_tests, encoding="utf-8")
-    print(f"Generated: {output_file}")
+    json_file = OUTPUT_DIR / f"{base_name}_tests.json"
+    csv_file = OUTPUT_DIR / f"{base_name}_tests.csv"
 
+    # Save raw JSON
+    json_file.write_text(generated_tests, encoding="utf-8")
+
+    # Convert JSON to CSV
+    data = json.loads(generated_tests)
+
+    df = pd.DataFrame(data)
+
+    df.to_csv(csv_file, index=False)
+
+    df.to_markdown(index=False)
+
+    print(f"Generated {json_file}")
+    print(f"Generated {csv_file}")
 
 def main():
     config = load_json(CONFIG_FILE)
