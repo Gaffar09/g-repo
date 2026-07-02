@@ -3,26 +3,24 @@ import json
 from pathlib import Path
 from openai import OpenAI
 
-client = OpenAI(
-    api_key=os.environ["OPENROUTER_API_KEY"],
-    base_url="https://openrouter.ai/api/v1"
-)
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-prompt_template = (
-    BASE_DIR / "prompts/msdat_api_prompts.md"
-).read_text(encoding="utf-8")
+CONFIG_FILE = BASE_DIR / "config/ai_config.json"
+PROMPT_FILE = BASE_DIR / "prompts/msdat_api_prompts.md"
+INPUT_FILE = BASE_DIR / "inputs/api-endpoints.json"
+OUTPUT_DIR = BASE_DIR / "outputs/generated-tests"
 
-endpoints = json.loads(
-    (BASE_DIR / "inputs/api-endpoints.json").read_text(encoding="utf-8")
-)
 
-output_dir = BASE_DIR / "outputs/generated-tests"
-output_dir.mkdir(parents=True, exist_ok=True)
+def load_json(file_path):
+    return json.loads(file_path.read_text(encoding="utf-8"))
 
-for item in endpoints:
 
+def load_prompt(file_path):
+    return file_path.read_text(encoding="utf-8")
+
+
+def build_prompt(prompt_template, item):
     final_prompt = prompt_template
     final_prompt = final_prompt.replace("{{endpoint}}", item["endpoint"])
     final_prompt = final_prompt.replace("{{method}}", item["method"])
@@ -33,25 +31,52 @@ for item in endpoints:
         "{{request_body}}",
         json.dumps(item["request_body"], indent=2)
     )
+    return final_prompt
+
+
+def generate_with_openrouter(config, prompt):
+    client = OpenAI(
+        api_key=os.environ["OPENROUTER_API_KEY"],
+        base_url=config["base_url"]
+    )
 
     response = client.chat.completions.create(
-        model="deepseek/deepseek-chat-v3",
+        model=config["model"],
         messages=[
             {
                 "role": "user",
-                "content": final_prompt
+                "content": prompt
             }
         ],
-        temperature=0.2
+        temperature=config.get("temperature", 0.2)
     )
 
-    generated_tests = response.choices[0].message.content
+    return response.choices[0].message.content
+
+
+def save_output(item, generated_tests):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     file_name = item["name"].lower().replace(" ", "_") + "_tests.md"
+    output_file = OUTPUT_DIR / file_name
 
-    (output_dir / file_name).write_text(
-        generated_tests,
-        encoding="utf-8"
-    )
+    output_file.write_text(generated_tests, encoding="utf-8")
 
-print("AI test cases generated successfully.")
+    print(f"Generated: {output_file}")
+
+
+def main():
+    config = load_json(CONFIG_FILE)
+    prompt_template = load_prompt(PROMPT_FILE)
+    endpoints = load_json(INPUT_FILE)
+
+    for item in endpoints:
+        final_prompt = build_prompt(prompt_template, item)
+        generated_tests = generate_with_openrouter(config, final_prompt)
+        save_output(item, generated_tests)
+
+    print("AI test cases generated successfully.")
+
+
+if __name__ == "__main__":
+    main()
