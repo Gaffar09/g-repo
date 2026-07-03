@@ -1,3 +1,4 @@
+from msdat_aiprompts.exporters.testpod_csv_exporter import export_testpod_csv
 from msdat_aiprompts.validators.test_case_validator import validate_generated_tests
 from msdat_aiprompts.exporters.csv_exporter import export_csv
 from msdat_aiprompts.exporters.markdown_exporter import export_markdown
@@ -61,6 +62,7 @@ def save_output(item, generated_tests):
     json_file = OUTPUT_DIR / f"{base_name}.json"
     csv_file = OUTPUT_DIR / f"{base_name}.csv"
     markdown_file = OUTPUT_DIR / f"{base_name}.md"
+    testpod_csv_file = OUTPUT_DIR / f"{base_name}_testpod.csv"
 
     # Save raw AI JSON output
     json_file.write_text(generated_tests, encoding="utf-8")
@@ -68,10 +70,13 @@ def save_output(item, generated_tests):
     # Export JSON into CSV and Markdown
     export_csv(generated_tests, csv_file)
     export_markdown(generated_tests, markdown_file)
+    export_testpod_csv(generated_tests, testpod_csv_file)
+
 
     print(f"Generated JSON: {json_file}")
     print(f"Generated CSV: {csv_file}")
     print(f"Generated Markdown: {markdown_file}")
+    print(f"Generated TestPod CSV: {testpod_csv_file}")
 
 def main():
     config = load_json(CONFIG_FILE)
