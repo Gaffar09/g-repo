@@ -9,18 +9,33 @@ def export_testpod_csv(json_text, output_file):
 
     for item in data:
         rows.append({
-            "Test Case ID": item.get("test_id", ""),
-            "Title": item.get("scenario", ""),
+            "Name": item.get("scenario", ""),
+            "ID": item.get("test_id", ""),
+            "State": "draft",
+            "Priority": item.get("priority", "").lower(),
+            "Automation status": "not automated",
+            "Type": "functional",
+            "Steps": item.get("test_steps", ""),
             "Description": item.get("scenario", ""),
             "Precondition": item.get("precondition", ""),
-            "Steps": item.get("test_steps", ""),
-            "Test Data": item.get("test_data", ""),
-            "Expected Result": item.get("expected_result", ""),
-            "Priority": item.get("priority", ""),
-            "Test Type": "API",
-            "Automation Tool": item.get("automation_tool", ""),
-            "Automation Status": "Not Automated"
+            "Expected result": item.get("expected_result", "")
         })
 
     df = pd.DataFrame(rows)
+
+    df = df[
+        [
+            "Name",
+            "ID",
+            "State",
+            "Priority",
+            "Automation status",
+            "Type",
+            "Steps",
+            "Description",
+            "Precondition",
+            "Expected result"
+        ]
+    ]
+
     df.to_csv(output_file, index=False)
