@@ -1,3 +1,4 @@
+from msdat_aiprompts.validators.test_case_validator import validate_generated_tests
 from msdat_aiprompts.exporters.csv_exporter import export_csv
 from msdat_aiprompts.exporters.markdown_exporter import export_markdown
 import pandas as pd
@@ -80,7 +81,13 @@ def main():
     for item in endpoints:
         final_prompt = build_prompt(prompt_template, item)
         generated_tests = generate_with_gemini(config, final_prompt)
-        save_output(item, generated_tests)
+
+validate_generated_tests(
+    generated_tests,
+    minimum_test_cases=5
+)
+
+save_output(item, generated_tests)
 
     print("AI test cases generated successfully.")
 
