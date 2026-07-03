@@ -1,3 +1,5 @@
+from exporters.csv_exporter import export_csv
+from exporters.markdown_exporter import export_markdown
 import pandas as pd
 import os
 import json
@@ -51,28 +53,24 @@ def generate_with_gemini(config, prompt):
 
 
 def save_output(item, generated_tests):
-
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     base_name = item["name"].lower().replace(" ", "_")
 
-    json_file = OUTPUT_DIR / f"{base_name}_tests.json"
-    csv_file = OUTPUT_DIR / f"{base_name}_tests.csv"
+    json_file = OUTPUT_DIR / f"{base_name}.json"
+    csv_file = OUTPUT_DIR / f"{base_name}.csv"
+    markdown_file = OUTPUT_DIR / f"{base_name}.md"
 
-    # Save raw JSON
+    # Save raw AI JSON output
     json_file.write_text(generated_tests, encoding="utf-8")
 
-    # Convert JSON to CSV
-    data = json.loads(generated_tests)
+    # Export JSON into CSV and Markdown
+    export_csv(generated_tests, csv_file)
+    export_markdown(generated_tests, markdown_file)
 
-    df = pd.DataFrame(data)
-
-    df.to_csv(csv_file, index=False)
-
-    df.to_markdown(index=False)
-
-    print(f"Generated {json_file}")
-    print(f"Generated {csv_file}")
+    print(f"Generated JSON: {json_file}")
+    print(f"Generated CSV: {csv_file}")
+    print(f"Generated Markdown: {markdown_file}")
 
 def main():
     config = load_json(CONFIG_FILE)
