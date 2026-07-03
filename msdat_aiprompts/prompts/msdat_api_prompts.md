@@ -33,6 +33,11 @@ STRICT OUTPUT RULES:
 - Do not include any introduction.
 - Do not include endpoint summary text.
 - Do not include notes before or after the JSON.
+- Do not use markdown tables.
+- Do not use trailing commas.
+- All string values must be valid JSON strings.
+- Escape all quotes inside values.
+- The response must start with [ and end with ].
 - Generate at least 5 test cases.
 - Use Test IDs starting from APIMSDAT-001.
 - Priority must be one of: High, Medium, Low.
