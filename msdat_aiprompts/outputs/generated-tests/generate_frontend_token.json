@@ -1,0 +1,82 @@
+[
+  {
+    "test_id": "APIMSDAT-001",
+    "scenario": "Verify successful frontend JWT token generation with an empty JSON body.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Set the `Content-Type` header to `application/json`.\n3. Send an empty JSON body: `{}`.\n4. Observe the HTTP response.",
+    "test_data": "Request Body: `{}`",
+    "expected_result": "1. The HTTP status code is 200 OK.\n2. The response body contains a non-empty string representing a valid JWT token.\n3. The `Content-Type` header of the response is `application/json`.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-002",
+    "scenario": "Verify API handles requests gracefully when the request body is entirely missing.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Set the `Content-Type` header to `application/json`.\n3. Do not include any request body.\n4. Observe the HTTP response.",
+    "test_data": "No request body.",
+    "expected_result": "1. The HTTP status code is 400 Bad Request (or 200 OK if the server implicitly treats missing body as empty).\n2. If 400, the response body contains a clear, descriptive error message indicating a missing or invalid request body.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-003",
+    "scenario": "Verify API rejects requests with malformed JSON in the request body.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Set the `Content-Type` header to `application/json`.\n3. Send a malformed JSON body, e.g., `{\"key\": \"value\"`.\n4. Observe the HTTP response.",
+    "test_data": "Request Body: `{\"key\": \"value\"`",
+    "expected_result": "1. The HTTP status code is 400 Bad Request.\n2. The response body contains a clear, descriptive error message indicating malformed JSON.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-004",
+    "scenario": "Verify API rejects requests using an unsupported HTTP method (e.g., GET).",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a GET request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Observe the HTTP response.",
+    "test_data": "N/A",
+    "expected_result": "1. The HTTP status code is 405 Method Not Allowed.\n2. The response headers include an `Allow` header with `POST` as a permitted method.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-005",
+    "scenario": "Verify the generated JWT token adheres to the standard JWT format and has a valid future expiry.",
+    "precondition": "A successful token generation request has been made (e.g., APIMSDAT-001).",
+    "test_steps": "1. Perform a successful POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token` to obtain a token.\n2. Extract the token string from the response.\n3. Decode the token (e.g., using a JWT library or online decoder).\n4. Verify the token consists of three base64-encoded parts separated by dots (header.payload.signature).\n5. Verify the decoded header contains `alg` and `typ` fields (e.g., `{\"alg\": \"HS256\", \"typ\": \"JWT\"}`).\n6. Verify the decoded payload contains an `exp` (expiration) claim.\n7. Verify the `exp` timestamp is in the future relative to the current time.",
+    "test_data": "Token obtained from a successful request.",
+    "expected_result": "1. The token is a valid JWT format.\n2. The token header and payload are correctly structured.\n3. The `exp` claim in the payload indicates a future expiration time.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-006",
+    "scenario": "Verify the API is resilient to common SQL injection and XSS attempts in HTTP headers.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Set `Content-Type: application/json` and an empty body `{}`.\n3. Add various HTTP headers with common SQL injection and XSS payloads, e.g., `User-Agent: ' OR 1=1 --`, `X-Forwarded-For: 127.0.0.1' UNION SELECT NULL,NULL,NULL --`, `Referer: javascript:alert(1)`.\n4. Observe the HTTP response and server logs.",
+    "test_data": "Request Body: `{}`, Headers: `User-Agent: ' OR 1=1 --`, `X-Forwarded-For: 127.0.0.1' UNION SELECT NULL,NULL,NULL --`, `Referer: javascript:alert(1)`",
+    "expected_result": "1. The HTTP status code is 200 OK, indicating the request was processed normally.\n2. A valid JWT token is returned, implying the malicious input was ignored or sanitized.\n3. No server-side errors, unexpected behavior, or log entries indicating successful injection attempts are observed.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-007",
+    "scenario": "Verify the API implements rate limiting to prevent abuse from repeated token generation requests.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a high volume of POST requests (e.g., 100 requests within 1 second) to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token` with an empty JSON body.\n2. Monitor the response status codes and server performance throughout the test.",
+    "test_data": "Request Body: `{}` (repeated many times).",
+    "expected_result": "1. Initial requests should return 200 OK with a valid token.\n2. Subsequent requests, after a defined threshold, should return 429 Too Many Requests.\n3. The server should remain stable and responsive, without performance degradation or crashes.",
+    "priority": "High",
+    "automation_tool": "k6"
+  },
+  {
+    "test_id": "APIMSDAT-008",
+    "scenario": "Verify that providing `Authorization` or `X-Frontend-JWT` headers to this endpoint (which doesn't require them) does not cause errors or unexpected behavior.",
+    "precondition": "The MSDAT API is running and accessible.",
+    "test_steps": "1. Send a POST request to `https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token`.\n2. Set `Content-Type: application/json` and an empty body `{}`.\n3. Add an `Authorization` header with a dummy JWT: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`.\n4. Add an `X-Frontend-JWT` header with another dummy JWT: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`.\n5. Observe the HTTP response.",
+    "test_data": "Request Body: `{}`, Headers: `Authorization: Bearer <dummy_jwt>`, `X-Frontend-JWT: <dummy_jwt>`",
+    "expected_result": "1. The HTTP status code is 200 OK.\n2. A valid JWT token is returned, indicating the provided authentication headers were ignored and did not interfere with the token generation process.\n3. No server-side errors or unexpected behavior in logs.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  }
+]
