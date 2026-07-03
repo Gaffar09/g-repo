@@ -45,7 +45,8 @@ def generate_with_gemini(config, prompt):
         model=config["model"],
         contents=prompt,
         config=types.GenerateContentConfig(
-            temperature=config.get("temperature", 0.2)
+            temperature=config.get("temperature", 0.2),
+            response_mime_type="application/json"
         )
     )
 
