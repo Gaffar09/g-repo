@@ -28,8 +28,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install google-genai
-             pip install pandas
+        run: pip install google-genai pandas tabulate
 
       - name: Generate test cases using AI
         env:
