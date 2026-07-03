@@ -47,9 +47,13 @@ jobs:
           path: msdat_aiprompts/outputs/generated-tests/
       - name: Commit generated test cases
         run: |
-              git config user.name "github-actions[bot]"
-              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-              git add msdat_aiprompts/outputs/generated-tests/
-              git commit -m "Add generated AI test cases" || echo "No changes to commit"
-              git pull --rebase origin main
-              git push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git reset --soft origin/main
+
+          git add msdat_aiprompts/outputs/generated-tests/
+
+           git commit -m "Add generated AI test cases" || echo "No changes to commit"
+           git push
