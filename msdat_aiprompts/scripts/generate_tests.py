@@ -1,5 +1,5 @@
-from exporters.csv_exporter import export_csv
-from exporters.markdown_exporter import export_markdown
+from msdat_aiprompts.exporters.csv_exporter import export_csv
+from msdat_aiprompts.exporters.markdown_exporter import export_markdown
 import pandas as pd
 import os
 import json
