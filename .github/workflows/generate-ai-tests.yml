@@ -33,7 +33,7 @@ jobs:
       - name: Generate test cases using AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python msdat_aiprompts/scripts/generate_tests.py
+        run: python -m msdat_aiprompts.scripts.generate_tests
 
       - name: Show generated files
         run: |
