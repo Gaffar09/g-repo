@@ -101,17 +101,25 @@ def main():
     config = load_json(CONFIG_FILE)
     prompt_template = load_prompt(PROMPT_FILE)
     endpoints = load_json(INPUT_FILE)
-    
+
     max_endpoints = config.get("max_endpoints_per_run")
 
     if max_endpoints:
         endpoints = endpoints[:max_endpoints]
-    
 
     for item in endpoints:
         final_prompt = build_prompt(prompt_template, item)
-        generated_tests = generate_with_gemini(config, final_prompt)
-        generated_tests = clean_ai_json(generated_tests)
+
+        base_name = item["name"].lower().replace(" ", "_")
+        json_file = OUTPUT_DIR / f"{base_name}.json"
+
+        if json_file.exists():
+            print(f"Using existing generated JSON: {json_file}")
+            generated_tests = json_file.read_text(encoding="utf-8")
+        else:
+            print(f"No existing JSON found. Calling Gemini for: {item['name']}")
+            generated_tests = generate_with_gemini(config, final_prompt)
+            generated_tests = clean_ai_json(generated_tests)
 
         validate_generated_tests(
             generated_tests,
