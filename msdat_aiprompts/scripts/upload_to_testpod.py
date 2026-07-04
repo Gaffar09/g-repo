@@ -26,7 +26,6 @@ def upload_test_case(test_case):
         "state": "",
         "priority": test_case.get("priority", "").lower(),
         "automation_status": "automation not required",
-        "type": "api",
         "description": html_wrap(test_case.get("scenario", "")),
         "precondition": html_wrap(test_case.get("precondition", "")),
         "step_type": "document",
