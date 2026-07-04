@@ -53,7 +53,26 @@ def generate_with_gemini(config, prompt):
 
     return response.text
 
+def clean_ai_json(raw_text):
+    cleaned = raw_text.strip()
 
+    if cleaned.startswith("```json"):
+        cleaned = cleaned.replace("```json", "", 1).strip()
+
+    if cleaned.startswith("```"):
+        cleaned = cleaned.replace("```", "", 1).strip()
+
+    if cleaned.endswith("```"):
+        cleaned = cleaned[:-3].strip()
+
+    start = cleaned.find("[")
+    end = cleaned.rfind("]")
+
+    if start != -1 and end != -1:
+        cleaned = cleaned[start:end + 1]
+
+    return cleaned
+    
 def save_output(item, generated_tests):
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -86,6 +105,7 @@ def main():
     for item in endpoints:
         final_prompt = build_prompt(prompt_template, item)
         generated_tests = generate_with_gemini(config, final_prompt)
+        generated_tests = clean_ai_json(generated_tests)
 
         validate_generated_tests(
             generated_tests,
