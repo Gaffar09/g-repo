@@ -28,7 +28,11 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install google-genai pandas tabulate
+        run: |
+            pip install google-genai
+            pip install pandas
+            pip install tabulate
+            pip install requests
 
       - name: Generate test cases using AI
         env:
@@ -57,3 +61,9 @@ jobs:
 
            git commit -m "Add generated AI test cases" || echo "No changes to commit"
            git push
+
+
+      - name:  Upload test cases to TestPod
+        env:
+          TESTPOD_API_TOKEN: ${{ secrets.TESTPOD_API_TOKEN }}
+        run: python -m msdat_aiprompts.scripts.upload_to_testpod
