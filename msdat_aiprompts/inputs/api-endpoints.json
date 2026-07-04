@@ -5,7 +5,61 @@
     "method": "POST",
     "auth_required": false,
     "auth_type": "X-Frontend-JWT",
-    "description": "This endpoint generates the frontend JWT token used for accessing MSDAT protected endpoints.",
+    "description": "Generates the frontend authentication token used for MSDAT protected endpoints.",
     "request_body": {}
+  },
+  {
+    "name": "Get Contacts",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/contacts/",
+    "method": "GET",
+    "auth_required": true,
+    "auth_type": "X-Frontend-JWT",
+    "description": "Retrieves contact records from MSDAT.",
+    "request_body": {}
+  },
+  {
+    "name": "Create Contact",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/contacts/",
+    "method": "POST",
+    "auth_required": true,
+    "auth_type": "X-Frontend-JWT",
+    "description": "Creates a new contact or feedback record in MSDAT.",
+    "request_body": {
+      "name": "string",
+      "email": "string",
+      "profession": "string",
+      "organization": "string",
+      "category": "string",
+      "feedback": "string",
+      "newsletter": true
+    }
+  },
+  {
+    "name": "Get Comments",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/comments/",
+    "method": "GET",
+    "auth_required": true,
+    "auth_type": "X-Frontend-JWT",
+    "description": "Retrieves comments from MSDAT.",
+    "request_body": {}
+  },
+  {
+    "name": "Create Comment",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/comments/",
+    "method": "POST",
+    "auth_required": true,
+    "auth_type": "X-Frontend-JWT",
+    "description": "Creates a new comment in MSDAT.",
+    "request_body": {
+       "commenter_full_name": "",
+        "commenter_initials": "",
+        "commenter_email": "",
+        "target_id": 0,
+        "ratio_x": 0,
+        "ratio_y": 0,
+        "dashboard": "string",
+        "section": "string",
+        "user": "" 
+    }
   }
 ]
