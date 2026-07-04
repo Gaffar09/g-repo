@@ -101,6 +101,11 @@ def main():
     config = load_json(CONFIG_FILE)
     prompt_template = load_prompt(PROMPT_FILE)
     endpoints = load_json(INPUT_FILE)
+    max_endpoints = config.get("max_endpoints_per_run")
+
+ if max_endpoints:
+    endpoints = endpoints[:max_endpoints]
+    
 
     for item in endpoints:
         final_prompt = build_prompt(prompt_template, item)
