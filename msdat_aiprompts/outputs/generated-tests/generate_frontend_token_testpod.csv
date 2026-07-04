@@ -1,54 +1,46 @@
-Test Case ID,Title,Description,Precondition,Steps,Test Data,Expected Result,Priority,Test Type,Automation Tool,Automation Status
-APIMSDAT-001,Verify that a valid frontend JWT token is generated upon a successful request with an empty JSON body.,Verify that a valid frontend JWT token is generated upon a successful request with an empty JSON body.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"".
-2. Set ""Content-Type: application/json"".
-3. Send an empty JSON body: {}.",Request Body: {},"Status code 200 OK.
-Response body contains a non-empty string representing the JWT token.
-The token is a valid JWT format (e.g., header.payload.signature).",High,API,Postman,Not Automated
-APIMSDAT-002,Verify the API handles requests with a missing body gracefully.,Verify the API handles requests with a missing body gracefully.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"".
-2. Set ""Content-Type: application/json"".
-3. Do not send any request body.",No request body.,"Status code 400 Bad Request or 422 Unprocessable Entity.
-Response body contains a clear error message indicating a missing or invalid request body.",High,API,Postman,Not Automated
-APIMSDAT-003,Verify the API rejects requests with malformed JSON in the body.,Verify the API rejects requests with malformed JSON in the body.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"".
-2. Set ""Content-Type: application/json"".
-3. Send a malformed JSON body (e.g., {""key"": ""value"").","Request Body: {""invalid_json"": ""missing_quote","Status code 400 Bad Request.
-Response body contains a clear error message indicating malformed JSON.",High,API,Postman,Not Automated
-APIMSDAT-004,Verify the API rejects requests using unsupported HTTP methods.,Verify the API rejects requests using unsupported HTTP methods.,API is up and accessible.,"1. Attempt to send a GET request to ""/api/auth/frontend-token"".
-2. Attempt to send a PUT request to ""/api/auth/frontend-token"".
-3. Attempt to send a DELETE request to ""/api/auth/frontend-token"".",N/A,"Status code 405 Method Not Allowed for all unsupported methods.
-Response headers may include ""Allow: POST"".",High,API,Postman,Not Automated
-APIMSDAT-005,Verify the API rejects requests with an unsupported Content-Type header.,Verify the API rejects requests with an unsupported Content-Type header.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"".
-2. Set ""Content-Type: text/plain"".
-3. Send an empty body or a plain text string.","Request Body: """", Content-Type: text/plain","Status code 415 Unsupported Media Type or 400 Bad Request.
-Response body contains an error message indicating an unsupported content type.",High,API,Postman,Not Automated
-APIMSDAT-006,Verify the API handles requests with unexpected fields in the JSON body.,Verify the API handles requests with unexpected fields in the JSON body.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"".
-2. Set ""Content-Type: application/json"".
-3. Send a JSON body with an extra, unexpected field: {""extra_field"": ""some_value""}.","Request Body: {""extra_field"": ""some_value""}","Ideally, status code 400 Bad Request with an error message indicating unexpected fields.
-Alternatively, status code 200 OK if the API is designed to ignore extra fields (less secure, but common). If 200, ensure the token is still generated correctly.",Medium,API,Postman,Not Automated
-APIMSDAT-007,Verify the format of the generated JWT token is correct and adheres to JWT standards.,Verify the format of the generated JWT token is correct and adheres to JWT standards.,A successful token generation request (APIMSDAT-001) has been executed.,"1. Perform a successful token generation request.
-2. Extract the generated token from the response.
-3. Validate that the token consists of three parts separated by dots (.).
-4. Validate that each part is a base64url encoded string.",Generated JWT token.,"The token string matches the header.payload.signature format.
-Each segment can be successfully base64url decoded.",High,API,Postman,Not Automated
-APIMSDAT-008,Verify the generated JWT token contains a valid future expiration timestamp.,Verify the generated JWT token contains a valid future expiration timestamp.,A successful token generation request (APIMSDAT-001) has been executed.,"1. Perform a successful token generation request.
-2. Extract the generated token.
-3. Decode the token's payload (second part) to retrieve claims.
-4. Verify the presence of the ""exp"" (expiration time) claim.
-5. Verify that the ""exp"" timestamp is in the future relative to the current time.",Generated JWT token.,"The decoded token payload contains an ""exp"" claim.
-The ""exp"" value is a valid Unix timestamp.
-The ""exp"" timestamp is greater than the current time, ensuring the token is valid upon generation.",High,API,Postman,Not Automated
-APIMSDAT-009,Verify the API implements rate limiting to prevent abuse and resource exhaustion from repeated requests.,Verify the API implements rate limiting to prevent abuse and resource exhaustion from repeated requests.,API is up and accessible.,"1. Send a large number of successful token generation requests (e.g., 100 requests) in a short period.
-2. Monitor response times and status codes.",Repeated empty JSON body: {},"After a certain threshold, subsequent requests should return a 429 Too Many Requests status code.
-Response headers should include ""X-RateLimit-Limit"", ""X-RateLimit-Remaining"", and ""X-RateLimit-Reset"".
-The API should remain responsive and not crash under load.",High,API,k6,Not Automated
-APIMSDAT-010,Verify the API's CORS policy is correctly configured to prevent unauthorized cross-origin requests.,Verify the API's CORS policy is correctly configured to prevent unauthorized cross-origin requests.,API is up and accessible.,"1. Send an OPTIONS preflight request to ""/api/auth/frontend-token"" from an unauthorized origin (e.g., ""http://malicious-site.com"").
-2. Send a POST request to ""/api/auth/frontend-token"" with an ""Origin"" header set to an unauthorized domain.",Origin header: http://malicious-site.com,"For unauthorized origins, the ""Access-Control-Allow-Origin"" header should not include the unauthorized origin, or should be absent.
-The API should reject the request (e.g., 403 Forbidden or no ""Access-Control-Allow-Origin"" header allowing the request).",Medium,API,Postman,Not Automated
-APIMSDAT-011,"Verify that error responses do not disclose sensitive server-side information (e.g., stack traces, internal IP addresses, specific library versions).","Verify that error responses do not disclose sensitive server-side information (e.g., stack traces, internal IP addresses, specific library versions).",API is up and accessible.,"1. Trigger various error conditions (e.g., Malformed JSON, Invalid HTTP Method, Missing Body, Invalid Content-Type).
-2. Examine the content of the error responses.",Various invalid requests.,"Error responses should be generic and user-friendly.
-No stack traces, database errors, internal server details, or specific technology versions should be exposed.
-Error messages should be consistent in format (e.g., JSON with ""code"" and ""message"" fields).",High,API,Postman,Not Automated
-APIMSDAT-012,Verify that providing authentication headers to this endpoint (which doesn't require them) does not lead to unexpected behavior or errors.,Verify that providing authentication headers to this endpoint (which doesn't require them) does not lead to unexpected behavior or errors.,API is up and accessible.,"1. Send a POST request to ""/api/auth/frontend-token"" with an empty JSON body.
-2. Include an ""Authorization"" header with a dummy JWT (e.g., Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c).
-3. Include an ""X-Frontend-JWT"" header with a dummy JWT.","Request Body: {}, Headers: Authorization: Bearer <dummy_jwt>, X-Frontend-JWT: <dummy_jwt>","Status code 200 OK.
-A valid frontend JWT token is still generated, indicating the endpoint correctly ignores irrelevant authentication headers for its operation.
-No errors or unexpected behavior occur due to the presence of these headers.",Medium,API,Postman,Not Automated
+Name,ID,State,Priority,Automation status,Type,Steps,Description,Precondition,Expected result
+Successful Token Generation with Expected Empty Body,APIMSDAT-001,draft,high,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json.
+3. Set the request body to {}.",Successful Token Generation with Expected Empty Body,API is up and accessible.,Status code 200 OK. Response body contains a valid JWT token string. The token is a non-empty string.
+Missing Request Body,APIMSDAT-002,draft,high,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Do NOT include a request body.
+3. Optionally, do NOT include Content-Type header.",Missing Request Body,API is up and accessible.,Status code 400 Bad Request or 422 Unprocessable Entity. Response body contains an error message indicating a missing or invalid request body. No JWT token is generated.
+Malformed JSON Request Body,APIMSDAT-003,draft,high,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json.
+3. Set the request body to an invalid JSON string, e.g., {""key"": ""value"", [, null, true, """" (as raw body).",Malformed JSON Request Body,API is up and accessible.,Status code 400 Bad Request. Response body contains an error message indicating malformed JSON. No JWT token is generated.
+Invalid HTTP Method,APIMSDAT-004,draft,high,not automated,functional,"1. Attempt to send a GET request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Attempt to send a PUT request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token with an empty body.
+3. Attempt to send a DELETE request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.",Invalid HTTP Method,API is up and accessible.,"For all invalid methods (GET, PUT, DELETE, PATCH): Status code 405 Method Not Allowed. Response body may contain an error message indicating the disallowed method. No JWT token is generated."
+Invalid Content Type,APIMSDAT-005,draft,medium,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type to an unsupported type, e.g., text/plain, application/xml, image/jpeg.
+3. Set the request body to {}.",Invalid Content Type,API is up and accessible.,Status code 415 Unsupported Media Type. Response body contains an error message indicating the unsupported content type. No JWT token is generated.
+Unexpected Extra Fields in Request Body,APIMSDAT-006,draft,medium,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json.
+3. Set the request body to {""unexpected_field"": ""some_value"", ""another_field"": 123}.",Unexpected Extra Fields in Request Body,API is up and accessible.,"Status code 200 OK (if fields are ignored) OR 400 Bad Request (if fields are strictly validated and rejected). If 200, a valid JWT token is generated. If 400, an error message indicates unexpected fields. (Security Note: Ideally, the API should reject unexpected fields to prevent potential abuse or misinterpretation)."
+Token Format Validation,APIMSDAT-007,draft,high,not automated,functional,"1. Perform Test Case APIMSDAT-001 to obtain a valid JWT token.
+2. Validate the structure of the returned token: it should consist of three base64url-encoded parts separated by dots.
+3. Attempt to decode the header and payload parts (base64url decode).",Token Format Validation,"Successful token generation (e.g., from Test Case APIMSDAT-001).","The token string is not empty and contains exactly two dots, separating three parts. Each part is a valid base64url-encoded string. The decoded header and payload are valid JSON objects. The header typically contains 'alg' and 'typ' fields. The payload typically contains claims like 'iat', 'exp', 'sub', etc."
+Token Expiry Validation,APIMSDAT-008,draft,high,not automated,functional,"1. Perform Test Case APIMSDAT-001 to obtain a valid JWT token.
+2. Decode the payload part of the JWT.
+3. Extract the 'exp' claim value (Unix timestamp).
+4. Compare 'exp' value with the current Unix timestamp.",Token Expiry Validation,"Successful token generation (e.g., from Test Case APIMSDAT-001).","The decoded payload contains an 'exp' claim. The 'exp' claim value is a valid Unix timestamp. The 'exp' value is greater than the current time, indicating the token is valid for a future period."
+Unauthorized Access Attempt (with invalid auth headers),APIMSDAT-009,draft,medium,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token with an empty body.
+2. Include an X-Frontend-JWT header with a malformed or invalid JWT string (e.g., 'invalid.token.string').
+3. Include an Authorization header with a malformed or invalid token (e.g., 'Bearer invalid_token').",Unauthorized Access Attempt (with invalid auth headers),API is up and accessible.,"Status code 200 OK. A valid JWT token is generated. The presence of invalid authentication headers is ignored, and does not interfere with the endpoint's primary function or cause errors. (Security Note: The endpoint should not attempt to validate these headers if it's truly unauthenticated, or it should gracefully ignore them. It should NOT return a 401 or 403 based on these headers, as it's unauthenticated)."
+Missing Token (Verify Unauthenticated Access),APIMSDAT-010,draft,high,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json.
+3. Set the request body to {}.
+4. Ensure NO X-Frontend-JWT or Authorization headers are present.",Missing Token (Verify Unauthenticated Access),API is up and accessible.,Status code 200 OK. A valid JWT token is generated. This confirms the 'Authentication Required: False' specification.
+Repeated Request Handling / Rate Limiting,APIMSDAT-011,draft,high,not automated,functional,"1. Send a large number of POST requests (e.g., 1000 requests in a short period) to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token with an empty body.
+2. Monitor response times and status codes.",Repeated Request Handling / Rate Limiting,API is up and accessible.,"The API should ideally implement rate limiting, returning 429 Too Many Requests after a certain threshold. The API should remain responsive and not crash or degrade significantly under load. No sensitive information should be exposed due to high load."
+Error Response Validation (Generic),APIMSDAT-012,draft,high,not automated,functional,"1. Trigger various error conditions (e.g., Malformed JSON, Invalid HTTP Method, Missing Body, Invalid Content Type).
+2. Examine the structure and content of the error responses.",Error Response Validation (Generic),API is up and accessible.,"Error responses should have a consistent JSON structure (e.g., {""error"": ""message"", ""code"": ""errorCode""}). Error messages should be user-friendly and avoid technical jargon, stack traces, or internal server details. Appropriate HTTP status codes are used for different error types."
+Large Payload Attack (Security Abuse),APIMSDAT-013,draft,medium,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json.
+3. Set the request body to an extremely large JSON object (e.g., {""data"": ""A"" * 1024 * 1024 * 5} for 5MB).",Large Payload Attack (Security Abuse),API is up and accessible.,The API should reject the request with a 413 Payload Too Large or 400 Bad Request. The API should not crash or become unresponsive. No JWT token is generated.
+Character Encoding Attack (Security Abuse),APIMSDAT-014,draft,low,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token.
+2. Set Content-Type: application/json; charset=UTF-7 (or other unusual charsets).
+3. Provide an empty JSON body {}.",Character Encoding Attack (Security Abuse),API is up and accessible.,"The API should either reject the request with a 415 Unsupported Media Type or 400 Bad Request if the charset is not supported. If the charset is processed, it should not lead to parsing errors, data corruption, or unexpected behavior. No JWT token is generated if the request is malformed or rejected."
+Header Injection Attempt (Security Abuse),APIMSDAT-015,draft,medium,not automated,functional,"1. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/auth/frontend-token with an empty body.
+2. Include custom headers with extremely long values (e.g., X-Long-Header: ""A"" * 10000).
+3. Include headers with control characters or newline characters (e.g., X-Inject: value%0D%0AAnother-Header: injected).",Header Injection Attempt (Security Abuse),API is up and accessible.,"The API should gracefully handle excessively long headers, potentially rejecting the request with a 4xx error or truncating them. The API should not allow header injection (e.g., by interpreting newline characters as new headers). The API should not crash or expose sensitive information."
