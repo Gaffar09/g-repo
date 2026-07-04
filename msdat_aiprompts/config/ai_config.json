@@ -3,4 +3,5 @@
   "model": "gemini-1.5-flash",
   "temperature": 0,
   "output_format": "markdown"
+  "max_endpoints_per_run": 2
 }
