@@ -1,0 +1,142 @@
+[
+  {
+    "test_id": "APIMSDAT-001",
+    "scenario": "Successful retrieval of contact records with a valid JWT.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>",
+    "expected_result": "The API should respond with a 200 OK status code and a JSON array containing contact records.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-002",
+    "scenario": "Unauthorized access attempt - Missing X-Frontend-JWT token.",
+    "precondition": "None.",
+    "test_steps": "1. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n2. Do NOT include the 'X-Frontend-JWT' header.",
+    "test_data": "No 'X-Frontend-JWT' header.",
+    "expected_result": "The API should respond with a 401 Unauthorized status code and an appropriate error message indicating missing authentication credentials.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-003",
+    "scenario": "Unauthorized access attempt - Invalid X-Frontend-JWT token format.",
+    "precondition": "None.",
+    "test_steps": "1. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n2. Include the 'X-Frontend-JWT' header with a syntactically malformed token (e.g., 'invalid.token', 'abc').",
+    "test_data": "Header: X-Frontend-JWT: 'malformed_jwt_string'",
+    "expected_result": "The API should respond with a 401 Unauthorized or 400 Bad Request status code and an error message indicating an invalid token format.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-004",
+    "scenario": "Unauthorized access attempt - Expired X-Frontend-JWT token.",
+    "precondition": "An expired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain an expired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the expired token.",
+    "test_data": "Header: X-Frontend-JWT: <expired_jwt_token>",
+    "expected_result": "The API should respond with a 401 Unauthorized status code and an error message indicating that the token has expired.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-005",
+    "scenario": "Unauthorized access attempt - Validly formatted but non-existent/revoked X-Frontend-JWT token.",
+    "precondition": "A validly formatted but non-existent or revoked JWT token is available.",
+    "test_steps": "1. Obtain a validly formatted but non-existent or revoked JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with this token.",
+    "test_data": "Header: X-Frontend-JWT: <non_existent_or_revoked_jwt_token>",
+    "expected_result": "The API should respond with a 401 Unauthorized status code and an error message indicating the token is invalid or revoked.",
+    "priority": "High",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-006",
+    "scenario": "Invalid HTTP method usage - Attempting POST instead of GET.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.",
+    "test_data": "Method: POST, Header: X-Frontend-JWT: <valid_jwt_token>",
+    "expected_result": "The API should respond with a 405 Method Not Allowed status code and an error message indicating the unsupported method.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-007",
+    "scenario": "Invalid Content-Type header for a GET request.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.\n4. Include an unsupported 'Content-Type' header (e.g., 'application/xml').",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, Content-Type: application/xml",
+    "expected_result": "The API should respond with a 200 OK status code, as GET requests typically ignore the body and Content-Type, or a 415 Unsupported Media Type if strict validation is in place.",
+    "priority": "Low",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-008",
+    "scenario": "Rate limiting enforcement - Excessive requests.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a high volume of GET requests (e.g., 100 requests within 1 second) to https://msdat-api.fmohconnect.gov.ng/api/contacts/ using the same token.",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, Repeated requests.",
+    "expected_result": "After a certain threshold, the API should respond with a 429 Too Many Requests status code for subsequent requests, indicating rate limiting is active.",
+    "priority": "High",
+    "automation_tool": "k6"
+  },
+  {
+    "test_id": "APIMSDAT-009",
+    "scenario": "Security abuse - Header injection attempt (CRLF).",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.\n4. Add a custom header with CRLF injection attempts (e.g., 'X-Custom-Header: value%0D%0AAnother-Header: injected').",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, X-Custom-Header: 'test%0D%0ASet-Cookie: injected_cookie=malicious'",
+    "expected_result": "The API should reject the request with a 400 Bad Request or similar error, or sanitize the header to prevent injection, without processing the injected header.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-010",
+    "scenario": "Security abuse - Extremely large header values.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.\n4. Add a custom header (e.g., 'X-Large-Header') with an excessively long string value (e.g., 10KB or more).",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, X-Large-Header: <10KB_string>",
+    "expected_result": "The API should handle the large header gracefully, either rejecting the request with a 4xx error (e.g., 400 Bad Request, 413 Payload Too Large) or ignoring the header without crashing or performance degradation.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-011",
+    "scenario": "Empty request body for a GET request.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.\n4. Explicitly send an empty request body.",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, Body: {}",
+    "expected_result": "The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the empty body.",
+    "priority": "Low",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-012",
+    "scenario": "Malformed JSON request body for a GET request.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.\n3. Include the 'X-Frontend-JWT' header with the valid token.\n4. Send a malformed JSON string as the request body (e.g., '{ \"key\": \"value\" ' or 'invalid json').",
+    "test_data": "Header: X-Frontend-JWT: <valid_jwt_token>, Body: '{ \"key\": \"value\" '",
+    "expected_result": "The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the malformed body.",
+    "priority": "Low",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-013",
+    "scenario": "Unexpected query parameters in a GET request.",
+    "precondition": "A valid, unexpired X-Frontend-JWT token is available.",
+    "test_steps": "1. Obtain a valid and unexpired X-Frontend-JWT token.\n2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/ with an unexpected query parameter (e.g., '?extraField=someValue').\n3. Include the 'X-Frontend-JWT' header with the valid token.",
+    "test_data": "URL: https://msdat-api.fmohconnect.gov.ng/api/contacts/?extraField=someValue, Header: X-Frontend-JWT: <valid_jwt_token>",
+    "expected_result": "The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the unexpected query parameter.",
+    "priority": "Low",
+    "automation_tool": "Postman"
+  },
+  {
+    "test_id": "APIMSDAT-014",
+    "scenario": "Error response structure validation.",
+    "precondition": "None (an error condition needs to be triggered).",
+    "test_steps": "1. Trigger an error condition (e.g., by sending a request with a missing token as in APIMSDAT-002).\n2. Capture the error response.\n3. Validate that the error response adheres to a consistent and expected JSON structure (e.g., containing 'error' message and 'code' fields).",
+    "test_data": "Request triggering 401 Unauthorized (e.g., no 'X-Frontend-JWT' header).",
+    "expected_result": "The error response should be a JSON object with a consistent structure, including fields like 'message' and 'statusCode' or 'code', and appropriate values for the triggered error.",
+    "priority": "Medium",
+    "automation_tool": "Postman"
+  }
+]

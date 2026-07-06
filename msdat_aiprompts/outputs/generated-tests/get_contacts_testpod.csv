@@ -1,0 +1,45 @@
+Name,ID,State,Priority,Automation status,Type,Steps,Description,Precondition,Expected result
+Successful retrieval of contact records with a valid JWT.,APIMSDAT-001,draft,high,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.",Successful retrieval of contact records with a valid JWT.,"A valid, unexpired X-Frontend-JWT token is available.",The API should respond with a 200 OK status code and a JSON array containing contact records.
+Unauthorized access attempt - Missing X-Frontend-JWT token.,APIMSDAT-002,draft,high,not automated,functional,"1. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+2. Do NOT include the 'X-Frontend-JWT' header.",Unauthorized access attempt - Missing X-Frontend-JWT token.,None.,The API should respond with a 401 Unauthorized status code and an appropriate error message indicating missing authentication credentials.
+Unauthorized access attempt - Invalid X-Frontend-JWT token format.,APIMSDAT-003,draft,high,not automated,functional,"1. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+2. Include the 'X-Frontend-JWT' header with a syntactically malformed token (e.g., 'invalid.token', 'abc').",Unauthorized access attempt - Invalid X-Frontend-JWT token format.,None.,The API should respond with a 401 Unauthorized or 400 Bad Request status code and an error message indicating an invalid token format.
+Unauthorized access attempt - Expired X-Frontend-JWT token.,APIMSDAT-004,draft,high,not automated,functional,"1. Obtain an expired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the expired token.",Unauthorized access attempt - Expired X-Frontend-JWT token.,An expired X-Frontend-JWT token is available.,The API should respond with a 401 Unauthorized status code and an error message indicating that the token has expired.
+Unauthorized access attempt - Validly formatted but non-existent/revoked X-Frontend-JWT token.,APIMSDAT-005,draft,high,not automated,functional,"1. Obtain a validly formatted but non-existent or revoked JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with this token.",Unauthorized access attempt - Validly formatted but non-existent/revoked X-Frontend-JWT token.,A validly formatted but non-existent or revoked JWT token is available.,The API should respond with a 401 Unauthorized status code and an error message indicating the token is invalid or revoked.
+Invalid HTTP method usage - Attempting POST instead of GET.,APIMSDAT-006,draft,medium,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a POST request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.",Invalid HTTP method usage - Attempting POST instead of GET.,"A valid, unexpired X-Frontend-JWT token is available.",The API should respond with a 405 Method Not Allowed status code and an error message indicating the unsupported method.
+Invalid Content-Type header for a GET request.,APIMSDAT-007,draft,low,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.
+4. Include an unsupported 'Content-Type' header (e.g., 'application/xml').",Invalid Content-Type header for a GET request.,"A valid, unexpired X-Frontend-JWT token is available.","The API should respond with a 200 OK status code, as GET requests typically ignore the body and Content-Type, or a 415 Unsupported Media Type if strict validation is in place."
+Rate limiting enforcement - Excessive requests.,APIMSDAT-008,draft,high,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a high volume of GET requests (e.g., 100 requests within 1 second) to https://msdat-api.fmohconnect.gov.ng/api/contacts/ using the same token.",Rate limiting enforcement - Excessive requests.,"A valid, unexpired X-Frontend-JWT token is available.","After a certain threshold, the API should respond with a 429 Too Many Requests status code for subsequent requests, indicating rate limiting is active."
+Security abuse - Header injection attempt (CRLF).,APIMSDAT-009,draft,medium,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.
+4. Add a custom header with CRLF injection attempts (e.g., 'X-Custom-Header: value%0D%0AAnother-Header: injected').",Security abuse - Header injection attempt (CRLF).,"A valid, unexpired X-Frontend-JWT token is available.","The API should reject the request with a 400 Bad Request or similar error, or sanitize the header to prevent injection, without processing the injected header."
+Security abuse - Extremely large header values.,APIMSDAT-010,draft,medium,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.
+4. Add a custom header (e.g., 'X-Large-Header') with an excessively long string value (e.g., 10KB or more).",Security abuse - Extremely large header values.,"A valid, unexpired X-Frontend-JWT token is available.","The API should handle the large header gracefully, either rejecting the request with a 4xx error (e.g., 400 Bad Request, 413 Payload Too Large) or ignoring the header without crashing or performance degradation."
+Empty request body for a GET request.,APIMSDAT-011,draft,low,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.
+4. Explicitly send an empty request body.",Empty request body for a GET request.,"A valid, unexpired X-Frontend-JWT token is available.","The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the empty body."
+Malformed JSON request body for a GET request.,APIMSDAT-012,draft,low,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/.
+3. Include the 'X-Frontend-JWT' header with the valid token.
+4. Send a malformed JSON string as the request body (e.g., '{ ""key"": ""value"" ' or 'invalid json').",Malformed JSON request body for a GET request.,"A valid, unexpired X-Frontend-JWT token is available.","The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the malformed body."
+Unexpected query parameters in a GET request.,APIMSDAT-013,draft,low,not automated,functional,"1. Obtain a valid and unexpired X-Frontend-JWT token.
+2. Send a GET request to https://msdat-api.fmohconnect.gov.ng/api/contacts/ with an unexpected query parameter (e.g., '?extraField=someValue').
+3. Include the 'X-Frontend-JWT' header with the valid token.",Unexpected query parameters in a GET request.,"A valid, unexpired X-Frontend-JWT token is available.","The API should respond with a 200 OK status code and a JSON array containing contact records, ignoring the unexpected query parameter."
+Error response structure validation.,APIMSDAT-014,draft,medium,not automated,functional,"1. Trigger an error condition (e.g., by sending a request with a missing token as in APIMSDAT-002).
+2. Capture the error response.
+3. Validate that the error response adheres to a consistent and expected JSON structure (e.g., containing 'error' message and 'code' fields).",Error response structure validation.,None (an error condition needs to be triggered).,"The error response should be a JSON object with a consistent structure, including fields like 'message' and 'statusCode' or 'code', and appropriate values for the triggered error."
