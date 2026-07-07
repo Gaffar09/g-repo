@@ -8,7 +8,6 @@
     "description": "Generates the frontend authentication token used for MSDAT protected endpoints.",
     "request_body": {}
   },
-  [
   {
     "name": "Dashboard",
     "api": "Dashboard API",
@@ -29,7 +28,6 @@
     "description": "Retrieve the list of DMI administrators.",
     "request_body": {}
   }
-]
   {
     "name": "Get Contacts",
     "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/contacts/",
