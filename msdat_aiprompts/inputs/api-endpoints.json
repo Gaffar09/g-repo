@@ -27,7 +27,7 @@
     "auth_type": "Bearer Token",
     "description": "Retrieve the list of DMI administrators.",
     "request_body": {}
-  }
+  },
   {
     "name": "Get Contacts",
     "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/contacts/",
@@ -52,7 +52,6 @@
       "category": "string",
       "feedback": "string",
       "newsletter": true
-    }
   },
   {
     "name": "Get Comments",
