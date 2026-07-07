@@ -8,6 +8,28 @@
     "description": "Generates the frontend authentication token used for MSDAT protected endpoints.",
     "request_body": {}
   },
+  [
+  {
+    "name": "Dashboard",
+    "api": "Dashboard API",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/dashboard",
+    "method": "GET",
+    "auth_required": true,
+    "auth_type": "Bearer Token",
+    "description": "Retrieve dashboard list summary and statistics.",
+    "request_body": {}
+  },
+  {
+    "name": "DMI Admins List",
+    "api": "DMI API",
+    "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/dmi/admins",
+    "method": "GET",
+    "auth_required": true,
+    "auth_type": "Bearer Token",
+    "description": "Retrieve the list of DMI administrators.",
+    "request_body": {}
+  }
+]
   {
     "name": "Get Contacts",
     "endpoint": "https://msdat-api.fmohconnect.gov.ng/api/contacts/",
