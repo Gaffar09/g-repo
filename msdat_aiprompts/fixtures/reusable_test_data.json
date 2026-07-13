@@ -1,0 +1,48 @@
+{
+  "authentication": {
+    "valid_token": "{{frontend_token}}",
+    "empty_token": "",
+    "invalid_token": "invalid-token-value",
+    "malformed_token": "abc.def",
+    "expired_token": "{{expired_token}}"
+  },
+  "headers": {
+    "valid_content_type": "application/json",
+    "invalid_content_type": "text/plain",
+    "xml_content_type": "application/xml"
+  },
+  "pagination": {
+    "minimum_valid_page": 1,
+    "below_minimum_page": 0,
+    "negative_page": -1,
+    "large_page": 999999,
+    "maximum_page_size": 100,
+    "above_maximum_page_size": 101
+  },
+  "identifiers": {
+    "valid_id": 1,
+    "zero_id": 0,
+    "negative_id": -1,
+    "large_id": 999999999,
+    "alphabetic_id": "abc",
+    "special_character_id": "@#$%"
+  },
+  "strings": {
+    "empty": "",
+    "whitespace": " ",
+    "single_character": "A",
+    "special_characters": "!@#$%^&*()",
+    "unicode": "测试بيانات",
+    "long_string": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "script_input": "<script>alert('test')</script>",
+    "sql_like_input": "' OR '1'='1"
+  },
+  "request_bodies": {
+    "empty_object": {},
+    "empty_array": [],
+    "null_value": null,
+    "string_instead_of_object": "invalid-body",
+    "number_instead_of_object": 12345,
+    "malformed_json": "{\"name\": \"test\""
+  }
+}
