@@ -1,0 +1,39 @@
+name: Generate MSDAT Functional Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-functional-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install google-genai
+
+      - name: Generate functional test definitions
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python msdat_aiprompts/scripts/generate_functional_tests.py
+
+      - name: Build Postman collection
+        run: |
+          python msdat_aiprompts/scripts/build_postman_collection.py
+
+      - name: Upload generated functional tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: msdat-functional-tests
+          path: |
+            msdat_aiprompts/outputs/generated-tests/functional/
+            msdat_aiprompts/postman/collections/
