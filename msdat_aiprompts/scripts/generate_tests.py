@@ -13,7 +13,7 @@ from msdat_aiprompts.validators.test_case_validator import (
 )
 
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[1]
 
 CONFIG_FILE = BASE_DIR / "config" / "ai_config.json"
 PROMPT_FILE = BASE_DIR / "prompts" / "msdat_api_prompts.md"
