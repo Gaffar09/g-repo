@@ -229,3 +229,5 @@ def generate_testpod_tests():
     print(
         "AI TestPod test cases generated successfully."
     )
+if __name__ == "__main__":
+    generate_testpod_tests()
