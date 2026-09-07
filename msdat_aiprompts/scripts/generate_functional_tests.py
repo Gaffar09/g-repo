@@ -77,6 +77,53 @@ REUSABLE TEST DATA:
 """.strip()
 
 
+def create_file_name(name):
+    return (
+        name.lower()
+        .replace(" ", "_")
+        .replace("/", "_")
+        .replace("\\", "_")
+        .replace("-", "_")
+    )
+
+
+def get_output_file(endpoint_name):
+    file_name = create_file_name(endpoint_name)
+
+    return OUTPUT_DIR / f"{file_name}.json"
+
+
+def existing_output_is_valid(output_file):
+    """
+    Check whether an existing generated test file
+    contains valid, usable functional test data.
+    """
+
+    if not output_file.exists():
+        return False
+
+    try:
+        existing_data = json.loads(
+            output_file.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        validate_functional_output(
+            existing_data
+        )
+
+        return True
+
+    except (
+        json.JSONDecodeError,
+        OSError,
+        ValueError,
+        TypeError,
+    ):
+        return False
+
+
 def generate_with_gemini(config, prompt):
     api_key = os.getenv("GEMINI_API_KEY")
 
@@ -88,9 +135,17 @@ def generate_with_gemini(config, prompt):
     client = genai.Client(api_key=api_key)
 
     max_attempts = 4
-    retry_delays = [30, 60, 120]
 
-    for attempt in range(1, max_attempts + 1):
+    retry_delays = [
+        30,
+        60,
+        120,
+    ]
+
+    for attempt in range(
+        1,
+        max_attempts + 1,
+    ):
         try:
             print(
                 f"Sending request to Gemini "
@@ -101,7 +156,10 @@ def generate_with_gemini(config, prompt):
                 model=config["model"],
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    temperature=config.get("temperature", 0.2),
+                    temperature=config.get(
+                        "temperature",
+                        0.2,
+                    ),
                     response_mime_type="application/json",
                 ),
             )
@@ -131,16 +189,24 @@ def generate_with_gemini(config, prompt):
                     "Gemini request failed after "
                     f"{max_attempts} attempts."
                 )
+
                 raise
 
-            delay = retry_delays[attempt - 1]
+            delay = retry_delays[
+                attempt - 1
+            ]
 
             print(
-                f"Gemini temporarily unavailable or rate limited. "
+                "Gemini temporarily unavailable "
+                "or rate limited."
+            )
+
+            print(
                 f"Retrying in {delay} seconds..."
             )
 
             time.sleep(delay)
+
 
 def clean_ai_json(raw_text):
     cleaned = raw_text.strip()
@@ -167,10 +233,13 @@ def clean_ai_json(raw_text):
 
     if start == -1 or end == -1:
         raise ValueError(
-            "Gemini response does not contain a JSON object."
+            "Gemini response does not contain "
+            "a JSON object."
         )
 
-    return cleaned[start:end + 1]
+    return cleaned[
+        start:end + 1
+    ]
 
 
 def validate_functional_output(data):
@@ -189,7 +258,10 @@ def validate_functional_output(data):
                 f"Missing required field: {field}"
             )
 
-    if not isinstance(data["test_cases"], list):
+    if not isinstance(
+        data["test_cases"],
+        list,
+    ):
         raise ValueError(
             "test_cases must be a list."
         )
@@ -230,82 +302,95 @@ def validate_functional_output(data):
         for field in required_test_fields:
             if field not in test_case:
                 raise ValueError(
-                    f"Test case {index} is missing: {field}"
+                    f"Test case {index} "
+                    f"is missing: {field}"
                 )
 
-        if test_case["category"] not in allowed_categories:
-            raise ValueError(
-                f"Invalid category in test case {index}"
-            )
-
-        if test_case["priority"] not in allowed_priorities:
-            raise ValueError(
-                f"Invalid priority in test case {index}"
-            )
-
-        if not test_case["test_id"].startswith(
-            "APIMSDAT-"
+        if (
+            test_case["category"]
+            not in allowed_categories
         ):
             raise ValueError(
-                f"Invalid test ID in test case {index}"
+                f"Invalid category in "
+                f"test case {index}"
+            )
+
+        if (
+            test_case["priority"]
+            not in allowed_priorities
+        ):
+            raise ValueError(
+                f"Invalid priority in "
+                f"test case {index}"
+            )
+
+        if not test_case[
+            "test_id"
+        ].startswith("APIMSDAT-"):
+            raise ValueError(
+                f"Invalid test ID in "
+                f"test case {index}"
             )
 
         request = test_case["request"]
 
         if not request.get("method"):
             raise ValueError(
-                f"Request method missing in test case {index}"
+                f"Request method missing in "
+                f"test case {index}"
             )
 
         if not request.get("url"):
             raise ValueError(
-                f"Request URL missing in test case {index}"
+                f"Request URL missing in "
+                f"test case {index}"
             )
 
-        assertions = test_case["assertions"]
+        assertions = test_case[
+            "assertions"
+        ]
 
-        if not isinstance(assertions, list):
+        if not isinstance(
+            assertions,
+            list,
+        ):
             raise ValueError(
-                f"Assertions must be a list in test case {index}"
+                f"Assertions must be a list "
+                f"in test case {index}"
             )
 
         if not assertions:
             raise ValueError(
-                f"No assertions found in test case {index}"
+                f"No assertions found in "
+                f"test case {index}"
             )
 
         for assertion in assertions:
             if not assertion.get("name"):
                 raise ValueError(
-                    f"Assertion name missing in test case {index}"
+                    f"Assertion name missing "
+                    f"in test case {index}"
                 )
 
             if not assertion.get("script"):
                 raise ValueError(
-                    f"Assertion script missing in test case {index}"
+                    f"Assertion script missing "
+                    f"in test case {index}"
                 )
 
 
-def create_file_name(name):
-    return (
-        name.lower()
-        .replace(" ", "_")
-        .replace("/", "_")
-        .replace("-", "_")
-    )
-
-
-def save_output(endpoint, generated_data):
+def save_output(
+    endpoint,
+    generated_data,
+):
     OUTPUT_DIR.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    file_name = create_file_name(
+    output_file = get_output_file(
         endpoint["name"]
     )
-
-    output_file = OUTPUT_DIR / f"{file_name}.json"
 
     output_file.write_text(
         json.dumps(
@@ -317,27 +402,95 @@ def save_output(endpoint, generated_data):
     )
 
     print(
-        f"Generated functional tests: {output_file}"
+        f"Generated functional tests: "
+        f"{output_file}"
     )
 
 
 def main():
-    config = load_json(CONFIG_FILE)
-    prompt_template = load_prompt(PROMPT_FILE)
-    endpoints = load_json(INPUT_FILE)
-    reusable_test_data = load_json(TEST_DATA_FILE)
+    print(
+        "Starting MSDAT functional "
+        "test generation..."
+    )
+
+    config = load_json(
+        CONFIG_FILE
+    )
+
+    prompt_template = load_prompt(
+        PROMPT_FILE
+    )
+
+    endpoints = load_json(
+        INPUT_FILE
+    )
+
+    reusable_test_data = load_json(
+        TEST_DATA_FILE
+    )
 
     max_endpoints = config.get(
         "max_endpoints_per_run"
     )
 
     if max_endpoints:
-        endpoints = endpoints[:max_endpoints]
+        endpoints = endpoints[
+            :max_endpoints
+        ]
+
+    generated_count = 0
+    skipped_count = 0
+
+    print(
+        f"Endpoints to process: "
+        f"{len(endpoints)}"
+    )
 
     for endpoint in endpoints:
+        endpoint_name = endpoint[
+            "name"
+        ]
+
+        output_file = get_output_file(
+            endpoint_name
+        )
+
         print(
-            f"Generating functional tests for: "
-            f"{endpoint['name']}"
+            "\n----------------------------------------"
+        )
+
+        print(
+            f"Processing: {endpoint_name}"
+        )
+
+        # --------------------------------------------------
+        # STEP 1: Check for an existing valid result
+        # --------------------------------------------------
+
+        if existing_output_is_valid(
+            output_file
+        ):
+            print(
+                "Valid existing functional "
+                "tests found."
+            )
+
+            print(
+                f"Skipping AI generation: "
+                f"{output_file}"
+            )
+
+            skipped_count += 1
+
+            continue
+
+        # --------------------------------------------------
+        # STEP 2: Generate tests with Gemini
+        # --------------------------------------------------
+
+        print(
+            f"Generating functional tests "
+            f"for: {endpoint_name}"
         )
 
         final_prompt = build_prompt(
@@ -351,27 +504,109 @@ def main():
             final_prompt,
         )
 
+        # --------------------------------------------------
+        # STEP 3: Clean AI response
+        # --------------------------------------------------
+
         cleaned_response = clean_ai_json(
             raw_response
         )
 
-        generated_data = json.loads(
-            cleaned_response
-        )
+        # --------------------------------------------------
+        # STEP 4: Parse JSON
+        # --------------------------------------------------
+
+        try:
+            generated_data = json.loads(
+                cleaned_response
+            )
+
+        except json.JSONDecodeError as error:
+            invalid_file = (
+                OUTPUT_DIR
+                / (
+                    f"{create_file_name(endpoint_name)}"
+                    "_invalid_response.txt"
+                )
+            )
+
+            OUTPUT_DIR.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            invalid_file.write_text(
+                raw_response,
+                encoding="utf-8",
+            )
+
+            print(
+                "Gemini returned invalid JSON."
+            )
+
+            print(
+                f"Invalid response saved to: "
+                f"{invalid_file}"
+            )
+
+            raise ValueError(
+                f"Invalid JSON returned by Gemini "
+                f"for {endpoint_name}: {error}"
+            )
+
+        # --------------------------------------------------
+        # STEP 5: Validate generated tests
+        # --------------------------------------------------
 
         validate_functional_output(
             generated_data
         )
+
+        # --------------------------------------------------
+        # STEP 6: Save generated tests
+        # --------------------------------------------------
 
         save_output(
             endpoint,
             generated_data,
         )
 
+        generated_count += 1
+
     print(
-        "Functional test generation completed successfully."
+        "\n========================================"
+    )
+
+    print(
+        "Functional test generation completed."
+    )
+
+    print(
+        f"Newly generated: {generated_count}"
+    )
+
+    print(
+        f"Skipped existing: {skipped_count}"
+    )
+
+    print(
+        f"Total processed: {len(endpoints)}"
+    )
+
+    print(
+        "========================================"
     )
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+
+    except Exception as error:
+        print(
+            "\nFunctional test generation failed:"
+        )
+
+        print(error)
+
+        sys.exit(1)
