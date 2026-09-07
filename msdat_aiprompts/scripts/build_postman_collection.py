@@ -175,7 +175,7 @@ def build_request_body(request_data):
 
 
 def build_url(request_data):
-    raw_url = request_data["url"]
+    raw_url = request_data["url"].strip()
 
     query_parameters = request_data.get(
         "query_parameters",
@@ -184,9 +184,26 @@ def build_url(request_data):
 
     parsed_url = urlsplit(raw_url)
 
+    # Extract only the API path.
+    # Example:
+    # https://msdat-api.fmohconnect.gov.ng/api/dashboard
+    # becomes:
+    # /api/dashboard
     path = parsed_url.path or "/"
 
-    # Preserve query parameters already included in the endpoint URL
+    if path.startswith("https://") or path.startswith("http://"):
+    raise ValueError(
+        f"Invalid API path generated from URL: {raw_url}"
+    )
+
+    
+
+    # Ensure the path starts with /
+    if not path.startswith("/"):
+        path = "/" + path
+
+    # Preserve query parameters already included
+    # in the endpoint URL.
     existing_query = parsed_url.query
 
     generated_query = ""
@@ -198,9 +215,14 @@ def build_url(request_data):
         )
 
     if existing_query and generated_query:
-        final_query = f"{existing_query}&{generated_query}"
+        final_query = (
+            f"{existing_query}&{generated_query}"
+        )
     else:
-        final_query = existing_query or generated_query
+        final_query = (
+            existing_query
+            or generated_query
+        )
 
     raw_postman_url = (
         "{{base_url}}"
@@ -208,7 +230,14 @@ def build_url(request_data):
     )
 
     if final_query:
-        raw_postman_url += f"?{final_query}"
+        raw_postman_url += (
+            f"?{final_query}"
+        )
+
+
+    print(
+    f"URL BUILD: {raw_url} -> {raw_postman_url}"
+)
 
     return {
         "raw": raw_postman_url,
