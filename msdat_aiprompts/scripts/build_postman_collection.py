@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -182,23 +182,43 @@ def build_url(request_data):
         {},
     )
 
-    if (
-        query_parameters
-        and "?" not in raw_url
-    ):
-        query_string = urlencode(
+    parsed_url = urlsplit(raw_url)
+
+    path = parsed_url.path or "/"
+
+    # Preserve query parameters already included in the endpoint URL
+    existing_query = parsed_url.query
+
+    generated_query = ""
+
+    if query_parameters:
+        generated_query = urlencode(
             query_parameters,
             doseq=True,
         )
 
-        raw_url = (
-            f"{raw_url}?{query_string}"
-        )
+    if existing_query and generated_query:
+        final_query = f"{existing_query}&{generated_query}"
+    else:
+        final_query = existing_query or generated_query
+
+    raw_postman_url = (
+        "{{base_url}}"
+        + path
+    )
+
+    if final_query:
+        raw_postman_url += f"?{final_query}"
 
     return {
-        "raw": raw_url,
+        "raw": raw_postman_url,
         "host": [
             "{{base_url}}"
+        ],
+        "path": [
+            segment
+            for segment in path.strip("/").split("/")
+            if segment
         ],
         "query": convert_query_parameters(
             query_parameters
