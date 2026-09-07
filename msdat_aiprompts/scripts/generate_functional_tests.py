@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+import time
 from pathlib import Path
 
 from google import genai
@@ -85,25 +87,60 @@ def generate_with_gemini(config, prompt):
 
     client = genai.Client(api_key=api_key)
 
-    response = client.models.generate_content(
-        model=config["model"],
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=config.get(
-                "temperature",
-                0.2,
-            ),
-            response_mime_type="application/json",
-        ),
-    )
+    max_attempts = 4
+    retry_delays = [30, 60, 120]
 
-    if not response.text:
-        raise ValueError(
-            "Gemini returned an empty response."
-        )
+    for attempt in range(1, max_attempts + 1):
+        try:
+            print(
+                f"Sending request to Gemini "
+                f"(attempt {attempt}/{max_attempts})..."
+            )
 
-    return response.text
+            response = client.models.generate_content(
+                model=config["model"],
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=config.get("temperature", 0.2),
+                    response_mime_type="application/json",
+                ),
+            )
 
+            if not response.text:
+                raise ValueError(
+                    "Gemini returned an empty response."
+                )
+
+            return response.text
+
+        except Exception as error:
+            error_text = str(error)
+
+            is_retryable = (
+                "503" in error_text
+                or "UNAVAILABLE" in error_text
+                or "429" in error_text
+                or "RESOURCE_EXHAUSTED" in error_text
+            )
+
+            if not is_retryable:
+                raise
+
+            if attempt == max_attempts:
+                print(
+                    "Gemini request failed after "
+                    f"{max_attempts} attempts."
+                )
+                raise
+
+            delay = retry_delays[attempt - 1]
+
+            print(
+                f"Gemini temporarily unavailable or rate limited. "
+                f"Retrying in {delay} seconds..."
+            )
+
+            time.sleep(delay)
 
 def clean_ai_json(raw_text):
     cleaned = raw_text.strip()
