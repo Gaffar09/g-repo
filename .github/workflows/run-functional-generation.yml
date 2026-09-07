@@ -16,6 +16,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Newman
+        run: npm install -g newman
+
       - name: Install dependencies
         run: |
           pip install google-genai
@@ -30,6 +33,10 @@ jobs:
         run: |
           python msdat_aiprompts/scripts/build_postman_collection.py
 
+      - name: Run functional tests
+        run: |
+          python msdat_aiprompts/scripts/run_functional_tests.py
+
       - name: Upload generated functional tests
         uses: actions/upload-artifact@v4
         with:
@@ -37,3 +44,6 @@ jobs:
           path: |
             msdat_aiprompts/outputs/generated-tests/functional/
             msdat_aiprompts/postman/collections/
+            msdat_aiprompts/outputs/functional-results/
+
+       
