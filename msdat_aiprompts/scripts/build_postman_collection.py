@@ -183,7 +183,7 @@ def build_url(request_data):
 
     parsed_url = urlsplit(raw_url)
 
-    # Extract only the API path.
+    # Extract only the API path from the full MSDAT URL.
     path = parsed_url.path or "/"
 
     # Ensure the path starts with /
@@ -228,7 +228,16 @@ def build_url(request_data):
 
     return {
         "raw": raw_postman_url,
+        "host": [
+            "{{base_url}}"
+        ],
+        "path": [
+            segment
+            for segment in path.strip("/").split("/")
+            if segment
+        ],
     }
+
 
 def should_save_frontend_token(
     test_case,
