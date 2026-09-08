@@ -226,20 +226,9 @@ def build_url(request_data):
         f"URL BUILD: {raw_url} -> {raw_postman_url}"
     )
 
-    return {
-        "raw": raw_postman_url,
-        "host": [
-            "{{base_url}}"
-        ],
-        "path": [
-            segment
-            for segment in path.strip("/").split("/")
-            if segment
-        ],
-        "query": convert_query_parameters(
-            query_parameters
-        ),
-    }
+return {
+    "raw": raw_postman_url,
+}
 
 def should_save_frontend_token(
     test_case,
