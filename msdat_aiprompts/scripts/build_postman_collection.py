@@ -174,7 +174,7 @@ def build_request_body(request_data):
     return None
 
 def build_url(request_data):
-    raw_url = request_data["url"].strip()
+    raw_url = str(request_data["url"]).strip()
 
     query_parameters = request_data.get(
         "query_parameters",
@@ -226,9 +226,9 @@ def build_url(request_data):
         f"URL BUILD: {raw_url} -> {raw_postman_url}"
     )
 
-return {
-    "raw": raw_postman_url,
-}
+    return {
+        "raw": raw_postman_url,
+    }
 
 def should_save_frontend_token(
     test_case,
