@@ -183,16 +183,13 @@ def build_url(request_data):
 
     parsed_url = urlsplit(raw_url)
 
-    # Extract only the API path from the full MSDAT URL.
+    # Extract path
     path = parsed_url.path or "/"
-
-    # Ensure the path starts with /
     if not path.startswith("/"):
         path = "/" + path
 
-    # Preserve query parameters already included in the endpoint URL.
+    # Handle query parameters
     existing_query = parsed_url.query
-
     generated_query = ""
 
     if query_parameters:
@@ -206,24 +203,27 @@ def build_url(request_data):
     else:
         final_query = existing_query or generated_query
 
-    # Construct raw Postman URL with {{base_url}}
+    # Construct clean raw URL string
     raw_postman_url = f"{{{{base_url}}}}{path}"
-
     if final_query:
         raw_postman_url += f"?{final_query}"
+
+    path_segments = [
+        segment
+        for segment in path.strip("/").split("/")
+        if segment
+    ]
 
     print(f"URL BUILD: {raw_url} -> {raw_postman_url}")
 
     return {
         "raw": raw_postman_url,
-        "protocol": "https",
-        "host": ["msdat-api", "fmohconnect", "gov", "ng"],
-        "path": [
-            segment
-            for segment in path.strip("/").split("/")
-            if segment
+        "host": [
+            "{{base_url}}"
         ],
+        "path": path_segments,
     }
+
 def should_save_frontend_token(
     test_case,
 ):
