@@ -190,8 +190,7 @@ def build_url(request_data):
     if not path.startswith("/"):
         path = "/" + path
 
-    # Preserve query parameters already included
-    # in the endpoint URL.
+    # Preserve query parameters already included in the endpoint URL.
     existing_query = parsed_url.query
 
     generated_query = ""
@@ -203,42 +202,28 @@ def build_url(request_data):
         )
 
     if existing_query and generated_query:
-        final_query = (
-            f"{existing_query}&{generated_query}"
-        )
+        final_query = f"{existing_query}&{generated_query}"
     else:
-        final_query = (
-            existing_query
-            or generated_query
-        )
+        final_query = existing_query or generated_query
 
-    raw_postman_url = (
-        "{{base_url}}"
-        + path
-    )
+    # Construct raw Postman URL with {{base_url}}
+    raw_postman_url = f"{{{{base_url}}}}{path}"
 
     if final_query:
-        raw_postman_url += (
-            f"?{final_query}"
-        )
+        raw_postman_url += f"?{final_query}"
 
-    print(
-        f"URL BUILD: {raw_url} -> {raw_postman_url}"
-    )
+    print(f"URL BUILD: {raw_url} -> {raw_postman_url}")
 
     return {
         "raw": raw_postman_url,
-        "host": [
-            "{{base_url}}"
-        ],
+        "protocol": "https",
+        "host": ["msdat-api", "fmohconnect", "gov", "ng"],
         "path": [
             segment
             for segment in path.strip("/").split("/")
             if segment
         ],
     }
-
-
 def should_save_frontend_token(
     test_case,
 ):
