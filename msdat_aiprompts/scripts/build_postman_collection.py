@@ -173,7 +173,6 @@ def build_request_body(request_data):
 
     return None
 
-
 def build_url(request_data):
     raw_url = request_data["url"].strip()
 
@@ -185,18 +184,7 @@ def build_url(request_data):
     parsed_url = urlsplit(raw_url)
 
     # Extract only the API path.
-    # Example:
-    # https://msdat-api.fmohconnect.gov.ng/api/dashboard
-    # becomes:
-    # /api/dashboard
     path = parsed_url.path or "/"
-
-    if path.startswith("https://") or path.startswith("http://"):
-    raise ValueError(
-        f"Invalid API path generated from URL: {raw_url}"
-    )
-
-    
 
     # Ensure the path starts with /
     if not path.startswith("/"):
@@ -234,10 +222,9 @@ def build_url(request_data):
             f"?{final_query}"
         )
 
-
     print(
-    f"URL BUILD: {raw_url} -> {raw_postman_url}"
-)
+        f"URL BUILD: {raw_url} -> {raw_postman_url}"
+    )
 
     return {
         "raw": raw_postman_url,
@@ -253,7 +240,6 @@ def build_url(request_data):
             query_parameters
         ),
     }
-
 
 def should_save_frontend_token(
     test_case,
